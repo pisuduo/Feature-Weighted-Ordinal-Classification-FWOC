@@ -121,11 +121,11 @@ l.max=function(X,Y,k){
 }
 
 #--- univariate ordinal logistic regression for feature selection----
-uni.ordilg=function(X,y){
+uni.ordilg=function(X,y,skip=NULL){
   ## univariate ordinal logistic regression for feature selection
-  ## Input:
   ## X: n x p
   ## y: n-length vector
+  ## skip: columns index to skip because of extreme value in a certain sample.
   ## Output: a vector of p-values for each feature, length of p
   
   y=as.factor(y)
@@ -134,13 +134,22 @@ uni.ordilg=function(X,y){
   names(p.val)=colnames(X)
   for (i in 1:p){
     print(i)
-    mod=polr(y~X[,i],Hess=TRUE)
+    mod=tryCatch({
+      polr(y~X[,i],Hess=TRUE)
+    },error=function(e){
+      return(NULL)
+    })
+    if (is.null(mod)) {
+      p.val[i]=2
+      next
+    }
     ctable = coef(summary(mod))
     vals = pnorm(abs(ctable[,"t value"]),lower.tail = FALSE)*2
     p.val[i]=vals[1]
   }
   return(p.val)
 }
+
 
 ####  ------------ Metrics ----------- ####
 AW= function(J){
