@@ -1,6 +1,5 @@
 #### Application Example for FWOC (GSE68871) ####
 #### Author: Ziyang Ma ####
-#### Updated on 12/16/2020 ####
 
 #### Get the GSE68871 Dataset ####
 library(Biobase)
@@ -70,3 +69,51 @@ fwoc_beta =ortho(fwoc_beta) ##
 
 ## projections of the original data
 proj = X_sel %*% fwoc_beta
+
+## Implementation of penalizedLDA (plda)
+library(penalizedLDA)
+cv.out = PenalizedLDA.cv(X_sel,y,type="standard",lambdas=c(1e-4,1e-3,1e-2,.1,1.10))
+plda_mod = PenalizedLDA(X_sel,y,xte=NULL,lambda=cv.out$bestlambda,K=cv.out$bestK) ## best lambda=0.01, best k=2
+res.plda=ortho(plda_mod$discrim)
+proj.plda=X_sel%*%res.plda
+## get the projection plot Fig 5:
+
+proj_fwoc_df =data.frame(dim1 =proj[,1],dim2=proj[,2],y=y)
+proj_plda_df =data.frame(dim1 =proj.plda[,1],dim2=proj.plda[,2],y=y)
+
+library(ggplot2)
+p1 = ggplot(data=proj_fwoc_df,aes(x = dim1, y = dim2,color=as.factor(y),shape = as.factor(y)))+
+  geom_point()+scale_shape_manual(name = "Class",
+                                  labels = c("1", "2", "3",'4','5'),
+                                  values = c(15,1,17, 3,19))+
+  scale_color_manual(name = "Class",
+                     labels = c("1", "2", "3",'4','5'),
+                     values = c("#ff6666","#999933","#339966","#3399ff","#cc33cc"))+
+  theme_bw()+labs(x="First Dimension",y='Second Dimension',color='Class label')+
+  theme(plot.title = element_text(hjust=0.5),
+        legend.title = element_text(size=12),
+        legend.text=element_text(size=12),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=12,face="bold"))+
+  ggtitle("FWOC's projection: 1st vs. 2nd dimensions")+
+  theme(legend.position="top")
+
+
+p2 = ggplot(data=proj_plda_df,aes(x = dim1, y = dim2,color=as.factor(y),shape = as.factor(y)))+
+  geom_point()+  scale_shape_manual(name = "Class",
+                                    labels = c("1", "2", "3",'4','5'),
+                                    values = c(15,1, 17, 3,19))+
+  scale_color_manual(name = "Class",
+                     labels = c("1", "2", "3",'4','5'),
+                     values = c("#ff6666","#999933","#339966","#3399ff","#cc33cc"))+
+  theme_bw()+labs(x="First Dimension",y='Second Dimension',color='Class label')+
+  theme(plot.title = element_text(hjust=0.5),
+        legend.title = element_text(size=12),
+        legend.text=element_text(size=12),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=12,face="bold"))+
+  ggtitle("PLDA's projection: 1st vs. 2nd dimensions")+
+  theme(legend.position="top")
+
+
+
