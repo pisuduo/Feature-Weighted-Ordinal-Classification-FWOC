@@ -21,6 +21,13 @@ This file contains the main function of FWOC, need to run Helper Functions. R fi
 ### Cross Validation.R
 This file contains the function to run cross validation for FWOC, need to run Helper Functions. R and Main Function.R first.
 
-### Application_GSE9782.R (Application_GSE68871.R)
-This file contains the process of testing FWOC on the GSE9782 (GSE68871) dataset, including the data retrival, preprocessing and modeling. 
+### Projection_GSE9782.R (Projection_GSE68871.R)
+This file contains the process of testing FWOC on the GSE9782 (GSE68871) dataset, including the data retrival, preprocessing and modeling and achieving the final projections shown in the paper.
+
+### Implementaions.R
+This file contains the scripts for implmenting all the four methods based on given training and test datasets, need to run Helper Functions. R first.
+
+### opt_parameters.xlsx
+This file contains the chosen parameters for each training for the four methods. The final results are also included.
+
 
